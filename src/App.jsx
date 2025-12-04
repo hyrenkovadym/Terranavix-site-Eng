@@ -1,3 +1,5 @@
+import terraLogo from './assets/terranavix-logo.png'
+
 function App() {
   const scrollToSection = (id) => {
     const el = document.getElementById(id)
@@ -12,8 +14,7 @@ function App() {
       <header className="site-header">
         <div className="site-header-inner">
           <div className="logo-wrap">
-            <div className="logo-mark" />
-            <div className="logo-text">TerraNavix</div>
+            <img src={terraLogo} alt="TerraNavix logo" className="logo-img" />
           </div>
 
           <nav className="nav">
@@ -273,6 +274,137 @@ function App() {
             </div>
           </div>
         </section>
+
+
+
+
+        {/* RESULTS / ROI */}
+        <section id="section-results" className="section-results">
+          <div className="section-inner">
+            <h2>See the impact in your fields</h2>
+            <p>
+              TerraNavix helps reduce overlaps and skips, save fuel and inputs, and keep operators
+              fresher over long work days. Even on smaller farms, these gains add up over the
+              season.
+            </p>
+
+            <div className="results-grid">
+              <div className="results-card">
+                <div className="results-label">Overlap</div>
+                <div className="results-value">Less wasted passes</div>
+                <div className="results-text">
+                  Straighter passes and more accurate tracking mean fewer wasted trips over the same
+                  ground.
+                </div>
+              </div>
+              <div className="results-card">
+                <div className="results-label">Inputs</div>
+                <div className="results-value">More efficient use</div>
+                <div className="results-text">
+                  Reduce double-applied areas and misses when spraying and fertilizing.
+                </div>
+              </div>
+              <div className="results-card">
+                <div className="results-label">Operator</div>
+                <div className="results-value">Less fatigue</div>
+                <div className="results-text">
+                  Autosteer takes over the repetitive steering, so operators stay calmer and make
+                  fewer mistakes.
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+
+
+
+
+        {/* CONTACT / REQUEST A QUOTE */}
+        <section id="section-contact" className="section-contact">
+          <div className="section-inner contact-inner">
+            <div className="contact-text">
+              <h2>Let’s talk about your fields</h2>
+              <p>
+                Tell us a bit about your tractor, implements and how you work today. We’ll help you
+                understand if TerraNavix is a good fit and what configuration makes the most sense.
+              </p>
+              <ul>
+                <li>No obligation – just a conversation.</li>
+                <li>We respond by email within a few business days.</li>
+              </ul>
+            </div>
+
+            <form className="contact-form">
+              <div className="field">
+                <label htmlFor="name">Name</label>
+                <input id="name" type="text" placeholder="John Smith" />
+              </div>
+
+              <div className="field">
+                <label htmlFor="email">Email</label>
+                <input id="email" type="email" placeholder="you@example.com" />
+              </div>
+
+              <div className="field">
+                <label htmlFor="country">Country / State</label>
+                <input id="country" type="text" placeholder="USA, Iowa" />
+              </div>
+
+              <div className="field">
+                <label htmlFor="tractor">Tractor brand / model</label>
+                <input id="tractor" type="text" placeholder="Brand, model" />
+              </div>
+
+              <div className="field">
+                <label htmlFor="role">I am a</label>
+                <select id="role">
+                  <option>Farmer</option>
+                  <option>Contractor</option>
+                  <option>Dealer</option>
+                  <option>Other</option>
+                </select>
+              </div>
+
+              <div className="field">
+                <label htmlFor="message">Message</label>
+                <textarea
+                  id="message"
+                  rows="4"
+                  placeholder="Tell us about your fields and how you plan to use autosteer."
+                />
+              </div>
+
+              <button type="submit" className="btn-primary contact-submit">
+                Send my request
+              </button>
+
+              <p className="contact-note">
+                We only use your details to respond to your request. No spam, no sharing with third
+                parties.
+              </p>
+            </form>
+          </div>
+        </section>
+
+
+
+
+
+      <footer className="site-footer">
+        <div className="section-inner footer-inner">
+
+          <div className="footer-left">
+            © {new Date().getFullYear()} TerraNavix. All rights reserved.
+          </div>
+
+          <div className="footer-right">
+            Autosteer guidance kit for modern fields.
+          </div>
+        </div>
+      </footer>
+
 
 
 

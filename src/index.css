@@ -1,11 +1,14 @@
 :root {
-  --bg-dark: #050505;
-  --bg-gray: #111111;
+  --bg-dark: #1d1d1d;   /* фон сторінки і секцій */
+  --bg-gray: #5a5a5a;   /* трішки світліші картки */
   --text-main: #f5f5f5;
-  --text-muted: #a0a0a0;
+  --text-muted: #e0e0e0;
   --accent: #ff8a00;
   --max-width: 1200px;
 }
+
+
+
 
 /* базове скидання */
 *,
@@ -78,6 +81,12 @@ button {
   font-size: 13px;
 }
 
+.logo-img {
+  height: 32px;
+  display: block;
+}
+
+
 /* навігація */
 .nav {
   display: flex;
@@ -110,7 +119,7 @@ button {
 /* HERO */
 .hero {
   padding: 96px 16px 72px;
-  background: radial-gradient(circle at top left, #262626 0, #050505 55%);
+  background: var(--bg-dark); /* замість radial-gradient(...) */
 }
 
 .hero-inner {
@@ -340,9 +349,10 @@ button {
 /* KIT – what's in the box */
 .section-kit {
   padding: 72px 16px 80px;
-  background: #050505;
+  background: var(--bg-dark);
   color: var(--text-main);
 }
+
 
 .section-kit h2 {
   max-width: var(--max-width);
@@ -390,7 +400,7 @@ button {
   gap: 12px;
   padding: 10px 12px;
   border-radius: 14px;
-  background: #0b0b0b;
+  background: var(--bg-gray);
   border: 1px solid #222222;
 }
 
@@ -417,4 +427,222 @@ button {
 .kit-text {
   font-size: 13px;
   color: var(--text-muted);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* RESULTS / ROI */
+.section-results {
+  padding: 72px 16px 80px;
+  background: var(--bg-dark);
+  color: var(--text-main);
+}
+
+.section-results h2 {
+  max-width: var(--max-width);
+  margin: 0 auto 8px;
+  font-size: 28px;
+}
+
+.section-results p {
+  max-width: var(--max-width);
+  margin: 0 auto 28px;
+  font-size: 15px;
+  color: var(--text-muted);
+}
+
+.results-grid {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.results-card {
+  border-radius: 16px;
+  border: 1px solid #222222;
+  background: var(--bg-gray);
+  padding: 18px 18px 20px;
+}
+
+.results-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.results-value {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.results-text {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+
+
+
+
+
+
+
+
+/* CONTACT */
+.section-contact {
+  padding: 80px 16px 90px;
+  background: var(--bg-dark);
+  color: var(--text-main);
+}
+
+.contact-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.2fr 1.1fr;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+.contact-text h2 {
+  margin: 0 0 10px;
+  font-size: 28px;
+}
+
+.contact-text p {
+  margin: 0 0 16px;
+  font-size: 15px;
+  color: var(--text-muted);
+}
+
+.contact-text ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.contact-form {
+  background: var(--bg-gray);
+  border-radius: 18px;
+  border: 1px solid #222222;
+  padding: 20px 20px 22px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 14px;
+  font-size: 13px;
+}
+
+.field label {
+  margin-bottom: 4px;
+  color: var(--text-muted);
+}
+
+.field input,
+.field select,
+.field textarea {
+  border-radius: 10px;
+  border: 1px solid #2a2a2a;
+  background: #050505;
+  color: var(--text-main);
+  padding: 8px 10px;
+  font-size: 13px;
+  outline: none;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--accent);
+}
+
+.contact-submit {
+  margin-top: 4px;
+  width: 100%;
+  justify-content: center;
+}
+
+.contact-note {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+
+/* FOOTER */
+.site-footer {
+  border-top: 1px solid #333333;
+  background: var(--bg-dark);
+  padding: 18px 16px 22px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.site-footer {
+  border-top: 1px solid #333333;
+  background: var(--bg-dark);
+  padding: 14px 16px 18px;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.footer-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* якраз space-between */
+  gap: 16px;
+}
+
+.footer-left {
+  height: 24px;
+  display: block;
+}
+
+
+.footer-right {
+  white-space: nowrap;
+  text-align: right;
 }
