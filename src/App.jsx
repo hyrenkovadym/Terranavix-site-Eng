@@ -1,12 +1,81 @@
-import terraLogo from './assets/terranavix-logo.png'
+import { useState, useEffect, useRef } from 'react';
+
+import terraLogo from './assets/terranavix-logo.png';
+import kitMain from './assets/TerraNavix.png';
+import displayImg from './assets/display.png';
+import wheelImg from './assets/wheel.png';
+import antennaImg from './assets/antenna.png';
+import imuImg from './assets/imu.png';
+import wiringImg from './assets/wiring.png';
+import fasteningImg from './assets/fastening.png';
+
+const KIT_ITEMS = [
+  {
+    id: '01',
+    title: 'Rugged 10.1″ display',
+    text: 'Sunlight-readable touch display designed for daily use in the cab.',
+    image: displayImg,
+  },
+  {
+    id: '02',
+    title: 'Electric steering wheel',
+    text: 'High-torque steering wheel unit that keeps your tractor on the guidance line.',
+    image: wheelImg,
+  },
+  {
+    id: '03',
+    title: 'GNSS antenna',
+    text: 'Multi-constellation GNSS antenna with an external modem/RTK antenna for high-accuracy corrections.',
+    image: antennaImg,
+  },
+  {
+    id: '04',
+    title: 'External IMU',
+    text: 'Terrain compensation sensor to help maintain accuracy on slopes and rough ground.',
+    image: imuImg,
+  },
+  {
+    id: '05',
+    title: 'Cables & mounting hardware',
+    text: 'Full cable set, brackets and fixing hardware for a clean and reliable install, including wiring for the GNSS and modem/RTK antennas.',
+    image: wiringImg,
+  },
+  {
+    id: '06',
+    title: 'Installation & user guides',
+    text: 'Printed and digital manuals to help your team install and start using TerraNavix quickly.',
+    image: fasteningImg,
+  },
+];
 
 function App() {
+  const handleContactSubmit = (event) => {
+    event.preventDefault();
+    alert('Thank you! We will get back to you by email.');
+  };
+
   const scrollToSection = (id) => {
-    const el = document.getElementById(id)
+    const el = document.getElementById(id);
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-  }
+  };
+
+  const [activeKitIndex, setActiveKitIndex] = useState(0);
+
+  useEffect(() => {
+    // preload всіх картинок комплекту
+    KIT_ITEMS.forEach((item) => {
+      const img = new Image();
+      img.src = item.image;
+    });
+
+    const timer = setInterval(() => {
+      setActiveKitIndex((prev) => (prev + 1) % KIT_ITEMS.length);
+    }, 8000); // 8 секунд
+
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <div className="page">
@@ -21,10 +90,7 @@ function App() {
             <button onClick={() => scrollToSection('section-product')}>Product</button>
             <button onClick={() => scrollToSection('section-tech')}>Technology</button>
             <button onClick={() => scrollToSection('section-results')}>ROI</button>
-            <button
-              className="nav-cta"
-              onClick={() => scrollToSection('section-contact')}
-            >
+            <button className="nav-cta" onClick={() => scrollToSection('section-contact')}>
               Request a quote
             </button>
           </nav>
@@ -88,14 +154,13 @@ function App() {
           </div>
         </section>
 
-
-              {/* WHY TERRANAVIX */}
+        {/* WHY TERRANAVIX */}
         <section id="section-product" className="section-light">
           <div className="section-inner">
             <h2>Why farmers choose TerraNavix</h2>
             <p>
-              TerraNavix is built to keep guidance simple in real fields: straight rows, less
-              overlap and a calmer day in the cab — even for seasonal operators.
+              TerraNavix is built to keep guidance simple in real fields: straight rows, less overlap
+              and a calmer day in the cab — even for seasonal operators.
             </p>
 
             <div className="features-grid">
@@ -121,8 +186,8 @@ function App() {
                 <div className="feature-tag">Terrain compensation</div>
                 <div className="feature-title">Handles slopes and rough ground</div>
                 <div className="feature-text">
-                  External sensors help maintain guidance accuracy on uneven fields, slopes and
-                  rough conditions throughout the season.
+                  External sensors help maintain guidance accuracy on uneven fields, slopes and rough
+                  conditions throughout the season.
                 </div>
               </div>
 
@@ -138,9 +203,6 @@ function App() {
           </div>
         </section>
 
-
-
-
         {/* KIT – WHAT'S IN THE BOX */}
         <section id="section-tech" className="section-kit">
           <div className="section-inner">
@@ -153,78 +215,45 @@ function App() {
 
             <div className="kit-layout">
               <div className="kit-image-placeholder">
-                {/* Сюди потім поставимо реальне фото комплекту */}
-                <span>Kit photo goes here</span>
+                <img
+                  src={KIT_ITEMS[activeKitIndex].image}
+                  alt={KIT_ITEMS[activeKitIndex].title}
+                  className="kit-main-img"
+                />
               </div>
 
               <div className="kit-list">
-                <div className="kit-item">
-                  <div className="kit-badge">01</div>
-                  <div>
-                    <div className="kit-title">Rugged 10.1″ display</div>
-                    <div className="kit-text">
-                      Sunlight-readable touch display designed for daily use in the cab.
-                    </div>
-                  </div>
-                </div>
+                {KIT_ITEMS.map((item, index) => (
+                  <div
+                    key={item.id}
+                    className={`kit-item ${index === activeKitIndex ? 'kit-item-active' : ''}`}
 
-                <div className="kit-item">
-                  <div className="kit-badge">02</div>
-                  <div>
-                    <div className="kit-title">Electric steering wheel</div>
-                    <div className="kit-text">
-                      High-torque steering wheel unit that keeps your tractor on the guidance line.
+                    onClick={() => setActiveKitIndex(index)}
+                  >
+                    <div className="kit-badge">{item.id}</div>
+                    <div>
+                      <div className="kit-title">{item.title}</div>
+                      <div className="kit-text">{item.text}</div>
                     </div>
                   </div>
-                </div>
-
-                <div className="kit-item">
-                  <div className="kit-badge">03</div>
-                  <div>
-                    <div className="kit-title">GNSS antenna</div>
-                    <div className="kit-text">
-                      Multi-constellation GNSS antenna ready for high-accuracy corrections.
-                    </div>
-                  </div>
-                </div>
-
-                <div className="kit-item">
-                  <div className="kit-badge">04</div>
-                  <div>
-                    <div className="kit-title">External IMU</div>
-                    <div className="kit-text">
-                      Terrain compensation sensor to help maintain accuracy on slopes and rough
-                      ground.
-                    </div>
-                  </div>
-                </div>
-
-                <div className="kit-item">
-                  <div className="kit-badge">05</div>
-                  <div>
-                    <div className="kit-title">Cables & mounting hardware</div>
-                    <div className="kit-text">
-                      Full cable set, brackets and fixing hardware for a clean and reliable install.
-                    </div>
-                  </div>
-                </div>
-
-                <div className="kit-item">
-                  <div className="kit-badge">06</div>
-                  <div>
-                    <div className="kit-title">Installation & user guides</div>
-                    <div className="kit-text">
-                      Printed and digital manuals to help your team install and start using
-                      TerraNavix quickly.
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>
         </section>
 
+        {/* FIELD COMPARISON – animated */}
+        <section className="section-field" id="section-field">
+          <div className="section-inner">
+            <h2>Manual driving vs TerraNavix</h2>
+            <p>
+              On real fields, small steering corrections add up. TerraNavix keeps the tractor
+              on a consistent line so rows are straighter and overlap is easier to control.
+            </p>
 
+            <FieldCompare />
+          </div>
+        </section>
 
         {/* USE CASES */}
         <section className="section-light">
@@ -275,9 +304,6 @@ function App() {
           </div>
         </section>
 
-
-
-
         {/* RESULTS / ROI */}
         <section id="section-results" className="section-results">
           <div className="section-inner">
@@ -316,11 +342,6 @@ function App() {
           </div>
         </section>
 
-
-
-
-
-
         {/* CONTACT / REQUEST A QUOTE */}
         <section id="section-contact" className="section-contact">
           <div className="section-inner contact-inner">
@@ -336,7 +357,7 @@ function App() {
               </ul>
             </div>
 
-            <form className="contact-form">
+            <form className="contact-form" onSubmit={handleContactSubmit}>
               <div className="field">
                 <label htmlFor="name">Name</label>
                 <input id="name" type="text" placeholder="John Smith" />
@@ -388,33 +409,364 @@ function App() {
           </div>
         </section>
 
+        <footer className="site-footer">
+          <div className="section-inner footer-inner">
+            <div className="footer-left">
+              © {new Date().getFullYear()} TerraNavix. All rights reserved.
+            </div>
 
-
-
-
-      <footer className="site-footer">
-        <div className="section-inner footer-inner">
-
-          <div className="footer-left">
-            © {new Date().getFullYear()} TerraNavix. All rights reserved.
+            <div className="footer-right">Autosteer guidance kit for modern fields.</div>
           </div>
-
-          <div className="footer-right">
-            Autosteer guidance kit for modern fields.
-          </div>
-        </div>
-      </footer>
-
-
-
-
-
-
-
-
+        </footer>
       </main>
     </div>
-  )
+  );
 }
 
-export default App
+/* 🔽 ОКРЕМИЙ КОМПОНЕНТ ДЛЯ АНІМОВАНИХ ПОЛІВ */
+
+function FieldCompare() {
+  const manualRef = useRef(null);
+  const autoRef = useRef(null);
+
+  useEffect(() => {
+    const manualCanvas = manualRef.current;
+    const autoCanvas = autoRef.current;
+    if (!manualCanvas || !autoCanvas) return;
+
+    function setupCanvas(canvas) {
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      return { ctx, width: rect.width, height: rect.height };
+    }
+
+    const manual = setupCanvas(manualCanvas);
+    const auto = setupCanvas(autoCanvas);
+
+    const rows = 8;
+    const marginX = 20;
+    const marginY = 18;
+    const startTime = performance.now();
+
+    function drawFrame(time) {
+      const t = (time - startTime) / 1000;
+
+      const configs = [
+        { mode: 'manual', ...manual },
+        { mode: 'auto', ...auto },
+      ];
+
+      for (const cfg of configs) {
+        const { ctx, width, height, mode } = cfg;
+
+        // фон поля
+        ctx.clearRect(0, 0, width, height);
+        ctx.fillStyle = '#050b05';
+        ctx.fillRect(0, 0, width, height);
+
+        const length = width - marginX * 2;
+        const spacing = (height - marginY * 2) / (rows - 1);
+
+        for (let i = 0; i < rows; i++) {
+          const baseY = marginY + i * spacing;
+          const xStart = marginX;
+          const xEnd = width - marginX;
+
+          const getY = (x) => {
+            if (mode === 'auto') {
+              return baseY + Math.sin(x / 120 + t * 0.5) * 1.5;
+            }
+            return (
+              baseY +
+              Math.sin(x / 35 + i * 0.8 + t * 0.9) * 7 +
+              Math.sin(x / 16 - t * 1.3 + i) * 4
+            );
+          };
+
+          // тьмяна «база»
+          ctx.beginPath();
+          ctx.moveTo(xStart, getY(xStart));
+          for (let x = xStart; x <= xEnd; x += 4) {
+            ctx.lineTo(x, getY(x));
+          }
+          ctx.strokeStyle =
+            mode === 'manual'
+              ? 'rgba(255, 123, 87, 0.25)'
+              : 'rgba(140, 255, 106, 0.25)';
+          ctx.lineWidth = 2;
+          ctx.shadowBlur = 0;
+          ctx.stroke();
+
+          // яскрава активна частина (рух трактора)
+          const speed = mode === 'manual' ? 40 : 75; // px/s
+          let head = ((t * speed) + i * 40) % (length + 40) - 20;
+          head = Math.max(0, Math.min(head, length));
+
+          ctx.beginPath();
+          let first = true;
+          for (let x = xStart; x <= xStart + head; x += 3) {
+            const y = getY(x);
+            if (first) {
+              ctx.moveTo(x, y);
+              first = false;
+            } else {
+              ctx.lineTo(x, y);
+            }
+          }
+          ctx.strokeStyle = mode === 'manual' ? '#ff7b57' : '#8cff6a';
+          ctx.lineWidth = 3;
+          ctx.shadowColor =
+            mode === 'manual'
+              ? 'rgba(255, 123, 87, 0.9)'
+              : 'rgba(140, 255, 106, 0.9)';
+          ctx.shadowBlur = 10;
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+        }
+      }
+
+      requestAnimationFrame(drawFrame);
+    }
+
+    const id = requestAnimationFrame(drawFrame);
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  return (
+    <div className="field-grid">
+      <div className="field-card">
+        <div className="field-label">Manual steering</div>
+        <canvas ref={manualRef} className="field-canvas" />
+        <div className="field-text">
+          Small steering errors on each pass lead to visible curves and overlap,
+          especially on longer fields and tired days.
+        </div>
+      </div>
+
+      <div className="field-card">
+        <div className="field-label">With TerraNavix autosteer</div>
+        <canvas ref={autoRef} className="field-canvas" />
+        <div className="field-text">
+          Autosteer holds the line on every pass, making rows visually straighter
+          and overlaps easier to manage across the whole field.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default App;
+
+
+// ============ CANVAS FIELD ANIMATION ============
+
+function createFieldAnimation(canvas, mode) {
+  if (!canvas) return;
+
+  function setup() {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+
+    if (!width || !height) return;
+
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    const padding = 12;
+
+    const spacingGrid = 24; // відстань між жовтими лініями-сіткою
+    const spacingAuto = 18; // крок між проходами з автопілотом
+    const spacingManual = 18; // крок між проходами без автопілота
+
+    const baseX = padding + 10;
+    const maxPasses = Math.floor(
+      (width - padding * 2 - 20) / spacingGrid
+    );
+
+    function drawBackground() {
+      // фон поля
+      ctx.fillStyle = '#f7eaa0';
+      ctx.fillRect(0, 0, width, height);
+
+      // рамка
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#e0c15a';
+      ctx.strokeRect(0.5, 0.5, width - 1, height - 1);
+
+      // горизонтальна сітка
+      ctx.strokeStyle = 'rgba(180, 150, 80, 0.5)';
+      ctx.lineWidth = 1;
+      for (let y = padding; y < height - padding; y += 10) {
+        ctx.beginPath();
+        ctx.moveTo(padding, y);
+        ctx.lineTo(width - padding, y);
+        ctx.stroke();
+      }
+
+      // вертикальна сітка
+      ctx.lineWidth = 1.2;
+      for (let i = 0; i <= maxPasses; i++) {
+        const gx = baseX + i * spacingGrid;
+        ctx.beginPath();
+        ctx.moveTo(gx, padding);
+        ctx.lineTo(gx, height - padding);
+        ctx.stroke();
+      }
+    }
+
+    drawBackground();
+
+    const state = {
+      ctx,
+      width,
+      height,
+      padding,
+      baseX,
+      mode,
+      passSpacing: mode === 'auto' ? spacingAuto : spacingManual,
+      currentPass: 0,
+      goingUp: true,
+      phase: 'vertical', // vertical | turn
+      x: baseX,
+      y: height - padding,
+      targetX:
+        baseX + (mode === 'auto' ? spacingAuto : spacingManual),
+      lastTime: null,
+    };
+
+    function getPassX(passIndex) {
+      const spacing = state.passSpacing;
+
+      if (state.mode === 'auto') {
+        // рівно, без хаосу
+        return state.baseX + passIndex * spacing;
+      } else {
+        // manual — трохи гуляємо
+        const jitter = (Math.random() - 0.5) * 10;
+        return state.baseX + passIndex * spacing + jitter;
+      }
+    }
+
+    function resetField() {
+      drawBackground();
+      state.currentPass = 0;
+      state.goingUp = true;
+      state.phase = 'vertical';
+      state.x = getPassX(0);
+      state.y = state.height - state.padding;
+      state.targetX = getPassX(1);
+    }
+
+    resetField();
+
+    function drawStep(dt) {
+      const speed = 80; // px/сек
+      const step = (speed * dt) / 1000;
+
+      let { x, y, phase, goingUp } = state;
+      const topLimit = state.padding;
+      const bottomLimit = state.height - state.padding;
+      const ctx = state.ctx;
+
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      ctx.strokeStyle =
+        state.mode === 'auto' ? '#00c86b' : '#ff4d4d';
+
+      let newX = x;
+      let newY = y;
+
+      if (phase === 'vertical') {
+        newY = goingUp ? y - step : y + step;
+
+        if (goingUp && newY <= topLimit) {
+          newY = topLimit;
+          phase = 'turn';
+          state.targetX = getPassX(state.currentPass + 1);
+        } else if (!goingUp && newY >= bottomLimit) {
+          newY = bottomLimit;
+          phase = 'turn';
+          state.targetX = getPassX(state.currentPass + 1);
+        }
+      } else if (phase === 'turn') {
+        const dir = state.targetX > x ? 1 : -1;
+        newX = x + dir * step;
+
+        if (
+          (dir === 1 && newX >= state.targetX) ||
+          (dir === -1 && newX <= state.targetX)
+        ) {
+          newX = state.targetX;
+          state.currentPass += 1;
+
+          // дійшли до краю — перезапускаємо поле
+          if (newX > state.width - state.padding - 10) {
+            resetField();
+            return;
+          }
+
+          goingUp = !goingUp;
+          phase = 'vertical';
+        }
+      }
+
+      // manual: невеликий дрейф навіть на вертикалі
+      if (state.mode === 'manual' && phase === 'vertical') {
+        const drift = (Math.random() - 0.5) * 0.6;
+        newX += drift;
+      }
+
+      // малюємо слід
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(newX, newY);
+      ctx.stroke();
+
+      // трактор-кружечок
+      const radius = 5;
+      ctx.fillStyle =
+        state.mode === 'auto' ? '#107912ff' : '#ed293dff';
+      ctx.beginPath();
+      ctx.arc(newX, newY, radius, 0, Math.PI * 2);
+      ctx.fill();
+
+      state.x = newX;
+      state.y = newY;
+      state.phase = phase;
+      state.goingUp = goingUp;
+    }
+
+    function loop(timestamp) {
+      if (state.lastTime == null) state.lastTime = timestamp;
+      const dt = timestamp - state.lastTime;
+      state.lastTime = timestamp;
+
+      const maxStep = 40;
+      let remaining = dt;
+      while (remaining > 0) {
+        const stepDt = Math.min(remaining, maxStep);
+        drawStep(stepDt);
+        remaining -= stepDt;
+      }
+
+      requestAnimationFrame(loop);
+    }
+
+    requestAnimationFrame(loop);
+  }
+
+  setup();
+}
