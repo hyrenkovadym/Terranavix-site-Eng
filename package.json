@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "build:hosting": "vite build && node scripts/prepare-hosting.mjs",
+    "start": "node server.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },

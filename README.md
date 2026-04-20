@@ -29,6 +29,16 @@ After this command:
 4. If asked, overwrite existing files.
 5. Open your domain and hard refresh (`Ctrl + F5`).
 
+## If your hosting forces Node.js launch mode
+
+Use command:
+
+```bash
+node server.js
+```
+
+This repository includes a production-ready `server.js` that serves `dist/` and supports SPA fallback to `index.html`.
+
 ## Notes
 
 - Form requests are sent to `w.cheyney@frendt.ua` via FormSubmit.
