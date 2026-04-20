@@ -1,18 +1,18 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 
 import terraLogo from './assets/terranavix-logo.png';
-import kitMain from './assets/TerraNavix.png';
 import displayImg from './assets/display.png';
 import wheelImg from './assets/wheel.png';
 import antennaImg from './assets/antenna.png';
 import imuImg from './assets/imu.png';
 import wiringImg from './assets/wiring.png';
 import fasteningImg from './assets/fastening.png';
+import fieldViewVideo from './assets/terranavix-field-view.mp4';
 
 const KIT_ITEMS = [
   {
     id: '01',
-    title: 'Rugged 10.1″ display',
+    title: 'Rugged 10.1" display',
     text: 'Sunlight-readable touch display designed for daily use in the cab.',
     image: displayImg,
   },
@@ -48,10 +48,92 @@ const KIT_ITEMS = [
   },
 ];
 
+const CONTACT_EMAIL = 'w.cheyney@frendt.ua';
+const INITIAL_FORM_VALUES = {
+  name: '',
+  email: '',
+  country: '',
+  tractor: '',
+  role: 'Farmer',
+  message: '',
+};
+
 function App() {
-  const handleContactSubmit = (event) => {
+  const [formValues, setFormValues] = useState(INITIAL_FORM_VALUES);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState({ type: '', message: '' });
+  const [activeKitIndex, setActiveKitIndex] = useState(0);
+
+  const handleContactChange = (event) => {
+    const { id, value } = event.target;
+    setFormValues((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleContactSubmit = async (event) => {
     event.preventDefault();
-    alert('Thank you! We will get back to you by email.');
+    if (isSubmitting) return;
+
+    const trimmedName = formValues.name.trim();
+    const trimmedEmail = formValues.email.trim();
+    const trimmedMessage = formValues.message.trim();
+
+    if (!trimmedName || !trimmedEmail) {
+      setSubmitStatus({
+        type: 'error',
+        message: 'Please fill in Name and Email before sending.',
+      });
+      return;
+    }
+
+    const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail);
+    if (!emailIsValid) {
+      setSubmitStatus({
+        type: 'error',
+        message: 'Please enter a valid email address.',
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitStatus({ type: '', message: '' });
+
+    try {
+      const response = await fetch(`https://formsubmit.co/ajax/${CONTACT_EMAIL}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          name: trimmedName,
+          email: trimmedEmail,
+          country: formValues.country.trim(),
+          tractor: formValues.tractor.trim(),
+          role: formValues.role,
+          message: trimmedMessage,
+          _subject: `TerraNavix quote request from ${trimmedName}`,
+          _template: 'table',
+          _captcha: 'false',
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+      setFormValues(INITIAL_FORM_VALUES);
+      setSubmitStatus({
+        type: 'success',
+        message: 'Thanks! Your request was sent. We will reply to your email soon.',
+      });
+    } catch {
+      setSubmitStatus({
+        type: 'error',
+        message: `Could not send the request now. Please write us directly at ${CONTACT_EMAIL}.`,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const scrollToSection = (id) => {
@@ -61,10 +143,8 @@ function App() {
     }
   };
 
-  const [activeKitIndex, setActiveKitIndex] = useState(0);
-
   useEffect(() => {
-    // preload всіх картинок комплекту
+    // Preload kit images.
     KIT_ITEMS.forEach((item) => {
       const img = new Image();
       img.src = item.image;
@@ -72,7 +152,7 @@ function App() {
 
     const timer = setInterval(() => {
       setActiveKitIndex((prev) => (prev + 1) % KIT_ITEMS.length);
-    }, 8000); // 8 секунд
+    }, 8000);
 
     return () => clearInterval(timer);
   }, []);
@@ -104,7 +184,7 @@ function App() {
             <div>
               <div className="hero-eyebrow">AUTOSTEER GUIDANCE KIT</div>
               <h1 className="hero-title">
-                Autosteer that keeps your rows straight — every pass, every field.
+                Autosteer that keeps your rows straight - every pass, every field.
               </h1>
               <p className="hero-subtitle">
                 TerraNavix is an all-in-one guidance kit that turns your tractor into a precision
@@ -112,23 +192,17 @@ function App() {
               </p>
 
               <ul className="hero-bullets">
-                <li>Fast installation — typically ready to work in about one day.</li>
+                <li>Fast installation - typically ready to work in about one day.</li>
                 <li>Universal kit for different tractors and implements.</li>
                 <li>High accuracy with GNSS and terrain compensation.</li>
                 <li>Simple interface operators can learn in a day.</li>
               </ul>
 
               <div className="hero-cta-row">
-                <button
-                  className="btn-primary"
-                  onClick={() => scrollToSection('section-contact')}
-                >
+                <button className="btn-primary" onClick={() => scrollToSection('section-contact')}>
                   Request a quote
                 </button>
-                <button
-                  className="btn-secondary"
-                  onClick={() => scrollToSection('section-product')}
-                >
+                <button className="btn-secondary" onClick={() => scrollToSection('section-product')}>
                   Explore the product
                 </button>
               </div>
@@ -139,10 +213,17 @@ function App() {
                 <div className="hero-mock-chip">TerraNavix field view</div>
                 <div className="hero-mock-map">
                   <div className="hero-mock-field">
-                    <div className="hero-mock-path" />
+                    <video
+                      className="hero-mock-video"
+                      src={fieldViewVideo}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                    />
                   </div>
                   <div className="hero-mock-sidebar">
-                    <span>AB line: A–B North</span>
+                    <span>AB line: A-B North</span>
                     <span>Pass-to-pass: high accuracy</span>
                     <span>Speed: 7.5 km/h</span>
                     <span>Overlap: reduced</span>
@@ -160,7 +241,7 @@ function App() {
             <h2>Why farmers choose TerraNavix</h2>
             <p>
               TerraNavix is built to keep guidance simple in real fields: straight rows, less overlap
-              and a calmer day in the cab — even for seasonal operators.
+              and a calmer day in the cab - even for seasonal operators.
             </p>
 
             <div className="features-grid">
@@ -203,13 +284,13 @@ function App() {
           </div>
         </section>
 
-        {/* KIT – WHAT'S IN THE BOX */}
+        {/* KIT - WHAT'S IN THE BOX */}
         <section id="section-tech" className="section-kit">
           <div className="section-inner">
-            <h2>What’s in the TerraNavix kit</h2>
+            <h2>What's in the TerraNavix kit</h2>
             <p>
               TerraNavix is delivered as a complete autosteer kit. All major components, cables and
-              mounting hardware are included — so you can go from box to field without hunting for
+              mounting hardware are included - so you can go from box to field without hunting for
               extra parts.
             </p>
 
@@ -227,7 +308,6 @@ function App() {
                   <div
                     key={item.id}
                     className={`kit-item ${index === activeKitIndex ? 'kit-item-active' : ''}`}
-
                     onClick={() => setActiveKitIndex(index)}
                   >
                     <div className="kit-badge">{item.id}</div>
@@ -242,25 +322,51 @@ function App() {
           </div>
         </section>
 
-        {/* FIELD COMPARISON – animated */}
+                {/* FIELD COMPARISON */}
         <section className="section-field" id="section-field">
           <div className="section-inner">
             <h2>Manual driving vs TerraNavix</h2>
             <p>
-              On real fields, small steering corrections add up. TerraNavix keeps the tractor
-              on a consistent line so rows are straighter and overlap is easier to control.
+              The same field, two different outcomes. Here is what changes when steering precision
+              is automated.
             </p>
 
-            <FieldCompare />
+            <div className="field-grid">
+              <article className="field-card">
+                <div className="field-label">Without Autosteer</div>
+                <p className="field-text">
+                  Manual steering creates small pass-to-pass errors that compound over the day.
+                </p>
+                <div className="field-subtitle">What happens in the field</div>
+                <ul className="field-list">
+                  <li>Up to 15% overlap across the field.</li>
+                  <li>Occasional double application of fertilizers and crop protection products.</li>
+                  <li>The operator constantly corrects the line and gets tired faster.</li>
+                </ul>
+              </article>
+
+              <article className="field-card">
+                <div className="field-label">With TerraNavix</div>
+                <p className="field-text">
+                  Guidance stays steady with straight passes and consistent field geometry.
+                </p>
+                <div className="field-subtitle">What TerraNavix changes</div>
+                <ul className="field-list">
+                  <li>Overlap can drop to around 3%.</li>
+                  <li>Up to 10-12% savings on fertilizers, crop protection products, and fuel.</li>
+                  <li>Straighter rows, calmer night shifts, and lower operator fatigue.</li>
+                </ul>
+              </article>
+            </div>
           </div>
         </section>
 
         {/* USE CASES */}
-        <section className="section-light">
+        <section className="section-dark-block">
           <div className="section-inner">
             <h2>Where TerraNavix helps the most</h2>
             <p>
-              One autosteer system for many operations across the season — from the first pass in
+              One autosteer system for many operations across the season - from the first pass in
               spring to the last loads at harvest.
             </p>
 
@@ -287,8 +393,8 @@ function App() {
                 <div className="feature-tag">Tillage</div>
                 <div className="feature-title">Straight passes in low visibility</div>
                 <div className="feature-text">
-                  Dust, night work or long days — TerraNavix keeps the tractor on line when it’s
-                  hard to see markers.
+                  Dust, night work or long days - TerraNavix keeps the tractor on line when it's hard
+                  to see markers.
                 </div>
               </div>
 
@@ -310,8 +416,7 @@ function App() {
             <h2>See the impact in your fields</h2>
             <p>
               TerraNavix helps reduce overlaps and skips, save fuel and inputs, and keep operators
-              fresher over long work days. Even on smaller farms, these gains add up over the
-              season.
+              fresher over long work days. Even on smaller farms, these gains add up over the season.
             </p>
 
             <div className="results-grid">
@@ -334,8 +439,8 @@ function App() {
                 <div className="results-label">Operator</div>
                 <div className="results-value">Less fatigue</div>
                 <div className="results-text">
-                  Autosteer takes over the repetitive steering, so operators stay calmer and make
-                  fewer mistakes.
+                  Autosteer takes over the repetitive steering, so operators stay calmer and make fewer
+                  mistakes.
                 </div>
               </div>
             </div>
@@ -346,59 +451,111 @@ function App() {
         <section id="section-contact" className="section-contact">
           <div className="section-inner contact-inner">
             <div className="contact-text">
-              <h2>Let’s talk about your fields</h2>
+              <h2>Let's talk about your fields</h2>
               <p>
-                Tell us a bit about your tractor, implements and how you work today. We’ll help you
+                Tell us a bit about your tractor, implements and how you work today. We'll help you
                 understand if TerraNavix is a good fit and what configuration makes the most sense.
               </p>
               <ul>
-                <li>No obligation – just a conversation.</li>
+                <li>No obligation - just a conversation.</li>
                 <li>We respond by email within a few business days.</li>
               </ul>
+
+              <div className="intl-sales-contact">
+                <div className="intl-sales-label">International sales contact</div>
+                <div className="intl-sales-name">William Cheyney</div>
+                <a className="intl-sales-phone" href="tel:+447472664547">
+                  +44 7472 664547
+                </a>
+                <a className="intl-sales-email" href="mailto:w.cheyney@frendt.ua">
+                  w.cheyney@frendt.ua
+                </a>
+              </div>
             </div>
 
             <form className="contact-form" onSubmit={handleContactSubmit}>
-              <div className="field">
-                <label htmlFor="name">Name</label>
-                <input id="name" type="text" placeholder="John Smith" />
+              <div className="contact-form-grid">
+                <div className="field field-half">
+                  <label htmlFor="name">Name</label>
+                  <input
+                    id="name"
+                    type="text"
+                    placeholder="John Smith"
+                    value={formValues.name}
+                    onChange={handleContactChange}
+                    required
+                  />
+                </div>
+
+                <div className="field field-half">
+                  <label htmlFor="email">Email</label>
+                  <input
+                    id="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    value={formValues.email}
+                    onChange={handleContactChange}
+                    required
+                  />
+                </div>
+
+                <div className="field field-half">
+                  <label htmlFor="country">Country / State</label>
+                  <input
+                    id="country"
+                    type="text"
+                    placeholder="Ukraine, Lviv region"
+                    value={formValues.country}
+                    onChange={handleContactChange}
+                  />
+                </div>
+
+                <div className="field field-half">
+                  <label htmlFor="tractor">Tractor brand / model</label>
+                  <input
+                    id="tractor"
+                    type="text"
+                    placeholder="John Deere 8R / New Holland T7"
+                    value={formValues.tractor}
+                    onChange={handleContactChange}
+                  />
+                </div>
+
+                <div className="field field-full">
+                  <label htmlFor="role">I am a</label>
+                  <select id="role" value={formValues.role} onChange={handleContactChange}>
+                    <option>Farmer</option>
+                    <option>Contractor</option>
+                    <option>Dealer</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+
+                <div className="field field-full">
+                  <label htmlFor="message">Message</label>
+                  <textarea
+                    id="message"
+                    rows="4"
+                    placeholder="Tell us about your fields and how you plan to use autosteer."
+                    value={formValues.message}
+                    onChange={handleContactChange}
+                  />
+                </div>
               </div>
 
-              <div className="field">
-                <label htmlFor="email">Email</label>
-                <input id="email" type="email" placeholder="you@example.com" />
-              </div>
+              {submitStatus.message ? (
+                <p
+                  className={`contact-status ${
+                    submitStatus.type === 'success' ? 'contact-status-success' : 'contact-status-error'
+                  }`}
+                  role="status"
+                >
+                  {submitStatus.message}
+                </p>
+              ) : null}
 
-              <div className="field">
-                <label htmlFor="country">Country / State</label>
-                <input id="country" type="text" placeholder="USA, Iowa" />
-              </div>
-
-              <div className="field">
-                <label htmlFor="tractor">Tractor brand / model</label>
-                <input id="tractor" type="text" placeholder="Brand, model" />
-              </div>
-
-              <div className="field">
-                <label htmlFor="role">I am a</label>
-                <select id="role">
-                  <option>Farmer</option>
-                  <option>Contractor</option>
-                  <option>Dealer</option>
-                  <option>Other</option>
-                </select>
-              </div>
-
-              <div className="field">
-                <label htmlFor="message">Message</label>
-                <textarea
-                  id="message"
-                  rows="4"
-                  placeholder="Tell us about your fields and how you plan to use autosteer."
-                />
-              </div>
-
-              <button type="submit" className="btn-primary contact-submit">
-                Send my request
+              <button type="submit" className="btn-primary contact-submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Sending...' : 'Send my request'}
               </button>
 
               <p className="contact-note">
@@ -411,9 +568,7 @@ function App() {
 
         <footer className="site-footer">
           <div className="section-inner footer-inner">
-            <div className="footer-left">
-              © {new Date().getFullYear()} TerraNavix. All rights reserved.
-            </div>
+            <div className="footer-left">(c) {new Date().getFullYear()} TerraNavix. All rights reserved.</div>
 
             <div className="footer-right">Autosteer guidance kit for modern fields.</div>
           </div>
@@ -423,350 +578,4 @@ function App() {
   );
 }
 
-/* 🔽 ОКРЕМИЙ КОМПОНЕНТ ДЛЯ АНІМОВАНИХ ПОЛІВ */
-
-function FieldCompare() {
-  const manualRef = useRef(null);
-  const autoRef = useRef(null);
-
-  useEffect(() => {
-    const manualCanvas = manualRef.current;
-    const autoCanvas = autoRef.current;
-    if (!manualCanvas || !autoCanvas) return;
-
-    function setupCanvas(canvas) {
-      const ctx = canvas.getContext('2d');
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-      return { ctx, width: rect.width, height: rect.height };
-    }
-
-    const manual = setupCanvas(manualCanvas);
-    const auto = setupCanvas(autoCanvas);
-
-    const rows = 8;
-    const marginX = 20;
-    const marginY = 18;
-    const startTime = performance.now();
-
-    function drawFrame(time) {
-      const t = (time - startTime) / 1000;
-
-      const configs = [
-        { mode: 'manual', ...manual },
-        { mode: 'auto', ...auto },
-      ];
-
-      for (const cfg of configs) {
-        const { ctx, width, height, mode } = cfg;
-
-        // фон поля
-        ctx.clearRect(0, 0, width, height);
-        ctx.fillStyle = '#050b05';
-        ctx.fillRect(0, 0, width, height);
-
-        const length = width - marginX * 2;
-        const spacing = (height - marginY * 2) / (rows - 1);
-
-        for (let i = 0; i < rows; i++) {
-          const baseY = marginY + i * spacing;
-          const xStart = marginX;
-          const xEnd = width - marginX;
-
-          const getY = (x) => {
-            if (mode === 'auto') {
-              return baseY + Math.sin(x / 120 + t * 0.5) * 1.5;
-            }
-            return (
-              baseY +
-              Math.sin(x / 35 + i * 0.8 + t * 0.9) * 7 +
-              Math.sin(x / 16 - t * 1.3 + i) * 4
-            );
-          };
-
-          // тьмяна «база»
-          ctx.beginPath();
-          ctx.moveTo(xStart, getY(xStart));
-          for (let x = xStart; x <= xEnd; x += 4) {
-            ctx.lineTo(x, getY(x));
-          }
-          ctx.strokeStyle =
-            mode === 'manual'
-              ? 'rgba(255, 123, 87, 0.25)'
-              : 'rgba(140, 255, 106, 0.25)';
-          ctx.lineWidth = 2;
-          ctx.shadowBlur = 0;
-          ctx.stroke();
-
-          // яскрава активна частина (рух трактора)
-          const speed = mode === 'manual' ? 40 : 75; // px/s
-          let head = ((t * speed) + i * 40) % (length + 40) - 20;
-          head = Math.max(0, Math.min(head, length));
-
-          ctx.beginPath();
-          let first = true;
-          for (let x = xStart; x <= xStart + head; x += 3) {
-            const y = getY(x);
-            if (first) {
-              ctx.moveTo(x, y);
-              first = false;
-            } else {
-              ctx.lineTo(x, y);
-            }
-          }
-          ctx.strokeStyle = mode === 'manual' ? '#ff7b57' : '#8cff6a';
-          ctx.lineWidth = 3;
-          ctx.shadowColor =
-            mode === 'manual'
-              ? 'rgba(255, 123, 87, 0.9)'
-              : 'rgba(140, 255, 106, 0.9)';
-          ctx.shadowBlur = 10;
-          ctx.stroke();
-          ctx.shadowBlur = 0;
-        }
-      }
-
-      requestAnimationFrame(drawFrame);
-    }
-
-    const id = requestAnimationFrame(drawFrame);
-    return () => cancelAnimationFrame(id);
-  }, []);
-
-  return (
-    <div className="field-grid">
-      <div className="field-card">
-        <div className="field-label">Manual steering</div>
-        <canvas ref={manualRef} className="field-canvas" />
-        <div className="field-text">
-          Small steering errors on each pass lead to visible curves and overlap,
-          especially on longer fields and tired days.
-        </div>
-      </div>
-
-      <div className="field-card">
-        <div className="field-label">With TerraNavix autosteer</div>
-        <canvas ref={autoRef} className="field-canvas" />
-        <div className="field-text">
-          Autosteer holds the line on every pass, making rows visually straighter
-          and overlaps easier to manage across the whole field.
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default App;
-
-
-// ============ CANVAS FIELD ANIMATION ============
-
-function createFieldAnimation(canvas, mode) {
-  if (!canvas) return;
-
-  function setup() {
-    const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-
-    if (!width || !height) return;
-
-    canvas.width = width * dpr;
-    canvas.height = height * dpr;
-
-    const ctx = canvas.getContext('2d');
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-    const padding = 12;
-
-    const spacingGrid = 24; // відстань між жовтими лініями-сіткою
-    const spacingAuto = 18; // крок між проходами з автопілотом
-    const spacingManual = 18; // крок між проходами без автопілота
-
-    const baseX = padding + 10;
-    const maxPasses = Math.floor(
-      (width - padding * 2 - 20) / spacingGrid
-    );
-
-    function drawBackground() {
-      // фон поля
-      ctx.fillStyle = '#f7eaa0';
-      ctx.fillRect(0, 0, width, height);
-
-      // рамка
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = '#e0c15a';
-      ctx.strokeRect(0.5, 0.5, width - 1, height - 1);
-
-      // горизонтальна сітка
-      ctx.strokeStyle = 'rgba(180, 150, 80, 0.5)';
-      ctx.lineWidth = 1;
-      for (let y = padding; y < height - padding; y += 10) {
-        ctx.beginPath();
-        ctx.moveTo(padding, y);
-        ctx.lineTo(width - padding, y);
-        ctx.stroke();
-      }
-
-      // вертикальна сітка
-      ctx.lineWidth = 1.2;
-      for (let i = 0; i <= maxPasses; i++) {
-        const gx = baseX + i * spacingGrid;
-        ctx.beginPath();
-        ctx.moveTo(gx, padding);
-        ctx.lineTo(gx, height - padding);
-        ctx.stroke();
-      }
-    }
-
-    drawBackground();
-
-    const state = {
-      ctx,
-      width,
-      height,
-      padding,
-      baseX,
-      mode,
-      passSpacing: mode === 'auto' ? spacingAuto : spacingManual,
-      currentPass: 0,
-      goingUp: true,
-      phase: 'vertical', // vertical | turn
-      x: baseX,
-      y: height - padding,
-      targetX:
-        baseX + (mode === 'auto' ? spacingAuto : spacingManual),
-      lastTime: null,
-    };
-
-    function getPassX(passIndex) {
-      const spacing = state.passSpacing;
-
-      if (state.mode === 'auto') {
-        // рівно, без хаосу
-        return state.baseX + passIndex * spacing;
-      } else {
-        // manual — трохи гуляємо
-        const jitter = (Math.random() - 0.5) * 10;
-        return state.baseX + passIndex * spacing + jitter;
-      }
-    }
-
-    function resetField() {
-      drawBackground();
-      state.currentPass = 0;
-      state.goingUp = true;
-      state.phase = 'vertical';
-      state.x = getPassX(0);
-      state.y = state.height - state.padding;
-      state.targetX = getPassX(1);
-    }
-
-    resetField();
-
-    function drawStep(dt) {
-      const speed = 80; // px/сек
-      const step = (speed * dt) / 1000;
-
-      let { x, y, phase, goingUp } = state;
-      const topLimit = state.padding;
-      const bottomLimit = state.height - state.padding;
-      const ctx = state.ctx;
-
-      ctx.lineWidth = 3;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-
-      ctx.strokeStyle =
-        state.mode === 'auto' ? '#00c86b' : '#ff4d4d';
-
-      let newX = x;
-      let newY = y;
-
-      if (phase === 'vertical') {
-        newY = goingUp ? y - step : y + step;
-
-        if (goingUp && newY <= topLimit) {
-          newY = topLimit;
-          phase = 'turn';
-          state.targetX = getPassX(state.currentPass + 1);
-        } else if (!goingUp && newY >= bottomLimit) {
-          newY = bottomLimit;
-          phase = 'turn';
-          state.targetX = getPassX(state.currentPass + 1);
-        }
-      } else if (phase === 'turn') {
-        const dir = state.targetX > x ? 1 : -1;
-        newX = x + dir * step;
-
-        if (
-          (dir === 1 && newX >= state.targetX) ||
-          (dir === -1 && newX <= state.targetX)
-        ) {
-          newX = state.targetX;
-          state.currentPass += 1;
-
-          // дійшли до краю — перезапускаємо поле
-          if (newX > state.width - state.padding - 10) {
-            resetField();
-            return;
-          }
-
-          goingUp = !goingUp;
-          phase = 'vertical';
-        }
-      }
-
-      // manual: невеликий дрейф навіть на вертикалі
-      if (state.mode === 'manual' && phase === 'vertical') {
-        const drift = (Math.random() - 0.5) * 0.6;
-        newX += drift;
-      }
-
-      // малюємо слід
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(newX, newY);
-      ctx.stroke();
-
-      // трактор-кружечок
-      const radius = 5;
-      ctx.fillStyle =
-        state.mode === 'auto' ? '#107912ff' : '#ed293dff';
-      ctx.beginPath();
-      ctx.arc(newX, newY, radius, 0, Math.PI * 2);
-      ctx.fill();
-
-      state.x = newX;
-      state.y = newY;
-      state.phase = phase;
-      state.goingUp = goingUp;
-    }
-
-    function loop(timestamp) {
-      if (state.lastTime == null) state.lastTime = timestamp;
-      const dt = timestamp - state.lastTime;
-      state.lastTime = timestamp;
-
-      const maxStep = 40;
-      let remaining = dt;
-      while (remaining > 0) {
-        const stepDt = Math.min(remaining, maxStep);
-        drawStep(stepDt);
-        remaining -= stepDt;
-      }
-
-      requestAnimationFrame(loop);
-    }
-
-    requestAnimationFrame(loop);
-  }
-
-  setup();
-}
